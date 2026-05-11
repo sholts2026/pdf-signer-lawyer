@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>חתימה דיגיטלית לעורכי דין</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">⚖️</div>
+      <div>
+        <h1>חתימה דיגיטלית לעורכי דין</h1>
+        <p class="subtitle">העלה מסמך · חתום · הוסף חותמת · הורד PDF חתום</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <!-- STEP 1: Upload -->
+    <section class="card" id="section-upload">
+      <div class="step-badge">1</div>
+      <h2>העלאת מסמך PDF</h2>
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" id="pdf-input" accept=".pdf,application/pdf" style="position:absolute;opacity:0;width:1px;height:1px">
+        <div id="upload-idle">
+          <div class="upload-icon">📄</div>
+          <p>גרור קובץ PDF לכאן</p>
+          <p class="hint">או</p>
+          <label for="pdf-input" class="btn btn-primary" style="cursor:pointer">בחר קובץ</label>
+        </div>
+        <div id="upload-done" class="hidden">
+          <span class="file-icon">✅</span>
+          <span id="file-name-label"></span>
+          <label for="pdf-input" class="btn btn-sm btn-ghost" style="cursor:pointer">החלף</label>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2+3: Stamp + Signature (two cards side by side) -->
+    <div class="two-cards">
+      <section class="card">
+        <div class="step-badge">2</div>
+        <h2>הגדרת חותמת</h2>
+        <div class="form-fields">
+          <label>שם עורך/ת הדין (ללא עו״ד)
+            <input type="text" id="lawyer-name" value="ישראל ישראלי" oninput="liveUpdateStamp()">
+          </label>
+          <label>מספר רישיון
+            <input type="text" id="license-number" value="12345" oninput="liveUpdateStamp()">
+          </label>
+          <label>עיר
+            <input type="text" id="city" value="תל אביב" oninput="liveUpdateStamp()">
+          </label>
+          <label>שורה נוספת (אופציונלי — כתובת, טלפון וכד׳)
+            <input type="text" id="stamp-extra" placeholder="רח׳ הרצל 1, טל׳ 03-1234567" oninput="liveUpdateStamp()">
+          </label>
+          <label>צבע חותמת
+            <div class="color-row">
+              <button class="color-swatch active" style="--c:#1a3a6b" onclick="pickColor(this,'#1a3a6b')"></button>
+              <button class="color-swatch" style="--c:#8b0000" onclick="pickColor(this,'#8b0000')"></button>
+              <button class="color-swatch" style="--c:#2d6a2d" onclick="pickColor(this,'#2d6a2d')"></button>
+              <button class="color-swatch" style="--c:#5a0080" onclick="pickColor(this,'#5a0080')"></button>
+              <button class="color-swatch" style="--c:#1a5f7a" onclick="pickColor(this,'#1a5f7a')"></button>
+            </div>
+          </label>
+        </div>
+        <div class="stamp-preview-wrap">
+          <p class="hint">תצוגה מקדימה:</p>
+          <canvas id="stamp-preview"></canvas>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="step-badge">3</div>
+        <h2>חתימה ידנית</h2>
+        <div class="sig-toolbar">
+          <label class="range-label">
+            עובי:
+            <input type="range" id="pen-size" min="1" max="8" value="3" oninput="setPenSize(this.value)">
+            <span id="pen-size-val">3</span>
+          </label>
+          <button class="btn btn-sm btn-ghost" onclick="clearSig()">נקה</button>
+        </div>
+        <div class="sig-wrap">
+          <canvas id="sig-canvas"></canvas>
+          <div class="sig-hint">חתום כאן עם העכבר או האצבע</div>
+        </div>
+      </section>
+    </div>
+
+    <!-- STEP 4: Position -->
+    <section class="card hidden" id="section-position">
+      <div class="step-badge">4</div>
+      <h2>מיקום החתימה על המסמך</h2>
+      <p class="hint">גרור את החותמת למיקום הרצוי · ניתן לשנות גודל עם הסליידר</p>
+
+      <div class="position-toolbar">
+        <div class="page-nav">
+          <button class="btn btn-sm" onclick="changePage(-1)">◄ הקודם</button>
+          <span id="page-label">עמוד 1 מתוך 1</span>
+          <button class="btn btn-sm" onclick="changePage(1)">הבא ►</button>
+        </div>
+        <label class="range-label">
+          גודל חותמת:
+          <input type="range" id="stamp-size" min="80" max="320" value="160" oninput="resizeStamp(this.value)">
+          <span id="stamp-size-val">160</span>px
+        </label>
+        <label class="range-label">
+          שקיפות חותמת:
+          <input type="range" id="stamp-opacity" min="30" max="100" value="80" oninput="updateOpacity(this.value)">
+          <span id="stamp-opacity-val">80</span>%
+        </label>
+      </div>
+
+      <div class="pdf-stage" id="pdf-stage">
+        <canvas id="pdf-canvas" class="pdf-canvas"></canvas>
+        <div id="stamp-drag" class="stamp-drag">
+          <canvas id="stamp-drag-canvas"></canvas>
+          <div class="drag-hint">✥ גרור</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Generate -->
+    <div class="generate-bar">
+      <button class="btn btn-generate" id="gen-btn" onclick="generatePDF()">
+        <span id="gen-text">⬇ הורד PDF חתום</span>
+      </button>
+    </div>
+
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
