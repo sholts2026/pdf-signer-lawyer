@@ -111,11 +111,11 @@ function drawStampOnCanvas(canvas, w, color) {
   const extra   = document.getElementById('stamp-extra')?.value    || '';
 
   // "עו״ד" gets its own prominent line; remaining lines are smaller
-  const titleFontSize = Math.round(w * 0.16);
+  const titleFontSize = Math.round(w * 0.15);
   const bodyFontSize  = Math.round(w * 0.12);
-  const titleLineH    = titleFontSize * 2.2;   // generous spacing so nothing clips
+  const titleLineH    = titleFontSize * 2.0;
   const bodyLineH     = bodyFontSize  * 1.7;
-  const padY          = titleFontSize * 0.6;
+  const padY          = titleFontSize * 0.5;
 
   const bodyLines = [name, `רישיון מס׳ ${license}`, city, extra].filter(l => l.trim());
   const h = Math.round(padY + titleLineH + bodyLineH * bodyLines.length + padY);
@@ -125,14 +125,13 @@ function drawStampOnCanvas(canvas, w, color) {
 
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, w, h);
-  ctx.direction    = 'rtl';
   ctx.fillStyle    = color;
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'middle';
 
-  // Draw "עו״ד" prominently
+  // Draw "עורך דין" prominently on its own line
   ctx.font = `bold ${titleFontSize}px Arial`;
-  ctx.fillText('עו״ד', w / 2, padY + titleLineH / 2);
+  ctx.fillText('עורך דין', w / 2, padY + titleLineH / 2);
 
   // Draw remaining lines smaller
   ctx.font = `bold ${bodyFontSize}px Arial`;
