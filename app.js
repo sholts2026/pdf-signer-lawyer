@@ -111,11 +111,11 @@ function drawStampOnCanvas(canvas, w, color) {
   const extra   = document.getElementById('stamp-extra')?.value    || '';
 
   // "עו״ד" gets its own prominent line; remaining lines are smaller
-  const titleFontSize = Math.round(w * 0.15);
-  const bodyFontSize  = Math.round(w * 0.12);
-  const titleLineH    = titleFontSize * 2.0;
-  const bodyLineH     = bodyFontSize  * 1.7;
-  const padY          = titleFontSize * 0.5;
+  const titleFontSize = Math.round(w * 0.11);
+  const bodyFontSize  = Math.round(w * 0.09);
+  const titleLineH    = titleFontSize * 2.2;
+  const bodyLineH     = bodyFontSize  * 1.9;
+  const padY          = titleFontSize * 0.6;
 
   const bodyLines = [name, `רישיון מס׳ ${license}`, city, extra].filter(l => l.trim());
   const h = Math.round(padY + titleLineH + bodyLineH * bodyLines.length + padY);
