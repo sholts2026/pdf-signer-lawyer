@@ -129,14 +129,16 @@ function drawStampOnCanvas(canvas, w, color) {
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'middle';
 
+  const maxW = w * 0.92;
+
   // Draw "עורך דין" prominently on its own line
   ctx.font = `bold ${titleFontSize}px Arial`;
-  ctx.fillText('עורך דין', w / 2, padY + titleLineH / 2);
+  ctx.fillText('עורך דין', w / 2, padY + titleLineH / 2, maxW);
 
   // Draw remaining lines smaller
   ctx.font = `bold ${bodyFontSize}px Arial`;
   bodyLines.forEach((line, i) => {
-    ctx.fillText(line, w / 2, padY + titleLineH + bodyLineH * i + bodyLineH / 2);
+    ctx.fillText(line, w / 2, padY + titleLineH + bodyLineH * i + bodyLineH / 2, maxW);
   });
 }
 
